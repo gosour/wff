@@ -60,52 +60,44 @@ Tree mkTree(char root, Tree left, Tree right)
 	t->right = right;
 	return t;
 }
-void printNodesUn(Tree);
 
-void printNodesBin(Tree t)
+void printTreeUn(Tree t);
+
+void printTreeBin(Tree t)
 {
 	if(t!=NULL){
-		/*putchar('(');*/
-		if(t->left && t->left->val == '~')
-			printNodesUn(t->left);
+		if (t->left && ISBINARY(t->left->val))
+			printTreeBin(t->left);
 		else
-			printNodesBin(t->left);
-		putchar(t->val);
-		if(t->right && t->right->val== '~')
-			printNodesUn(t->right);
+			printTreeUn(t->left);
+
+		printf("%c",t->val);
+
+		if (t->right && ISBINARY(t->right->val))
+			printTreeBin(t->right);
 		else
-			printNodesBin(t->right);
-		/*putchar(')');*/
+			printTreeUn(t->right);
 	}
 }
 
-void printNodesUn(Tree t)
+void printTreeUn(Tree t)
 {
 	if(t!=NULL){
-		putchar(t->val);
-		if(t->left && t->left->val == '~')
-			printNodesUn(t->left);
+		printf("%c",t->val);
+
+		if (t->left && ISBINARY(t->left->val))
+			printTreeBin(t->left);
 		else
-			printNodesBin(t->left);
+			printTreeUn(t->left);
+
+		if (t->right && ISBINARY(t->right->val))
+			printTreeBin(t->right);
+		else
+			printTreeUn(t->right);
+
 	}
 }
-void printTree(Tree t)
-{
-	if(t!=NULL){
-		/*printf("Curr: %c\n",t->val);*/
-		if(t->val >= 'A' && t->val <='Z')
-			putchar(t->val);
-		
-		printTree(t->left);
-		printf(" ");
-		printTree(t->right);
-		if(ISBINARY(t->val))
-			printNodesBin(t);
-		else if(t->val == '~')
-			printNodesUn(t);
-		putchar(' ');	
-	}
-}
+
 
 Tree P(char **);
 
@@ -196,8 +188,11 @@ Column* return_mask(char *input, int *varc)
 	for (level = 0; level < count; level++){
 		for (i = (1<<count)-1,j=0; i>=0; i--){   // we'll always output 2**n bits
 			temp = i;
+			printf("%d",(temp >> level) & 1);
+			temp = i;
 			c[level].bitpatt[j++] = (temp >> level) & 1;
 		}
+		printf("\n");
 
 	}	
 
@@ -243,10 +238,9 @@ void totalEval(Tree t, Column *c, int count)
 {
 	int pos=0;
 	while(pos<pow(2,count)){
-		printf("%d",evalTree(t,c,pos, count));
+		printf("%d\n",evalTree(t,c,pos, count));
 		pos++;
 	}
-	putchar('\n');
 }
 
 void Erecognizer(char **input){
@@ -256,13 +250,19 @@ void Erecognizer(char **input){
 	int i,j;
 
 	myCol = return_mask(*input,&varc);
+	printf("No of columns: %d\n",varc);
+	for(i=0;i<varc; i++){
+		printf("%c:\t",myCol[i].varname);
+		for(j=0;j<pow(2,varc);j++)
+			printf("%d",myCol[i].bitpatt[j]);
+		putchar('\n');
+	}
 	myTree = E(input);
 	expect(input,'*');
 	printf("Solving..\n");
 	totalEval(myTree,myCol,varc);
 	printf("Printing..\n");
-
-	printTree(myTree);
+	printTreeBin(myTree);
 }
 
 
