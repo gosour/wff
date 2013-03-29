@@ -60,52 +60,8 @@ Tree mkTree(char root, Tree left, Tree right)
 	t->right = right;
 	return t;
 }
-void printNodesUn(Tree);
 
-void printNodesBin(Tree t)
-{
-	if(t!=NULL){
-		/*putchar('(');*/
-		if(t->left && t->left->val == '~')
-			printNodesUn(t->left);
-		else
-			printNodesBin(t->left);
-		putchar(t->val);
-		if(t->right && t->right->val== '~')
-			printNodesUn(t->right);
-		else
-			printNodesBin(t->right);
-		/*putchar(')');*/
-	}
-}
 
-void printNodesUn(Tree t)
-{
-	if(t!=NULL){
-		putchar(t->val);
-		if(t->left && t->left->val == '~')
-			printNodesUn(t->left);
-		else
-			printNodesBin(t->left);
-	}
-}
-void printTree(Tree t)
-{
-	if(t!=NULL){
-		/*printf("Curr: %c\n",t->val);*/
-		if(t->val >= 'A' && t->val <='Z')
-			putchar(t->val);
-		
-		printTree(t->left);
-		printf(" ");
-		printTree(t->right);
-		if(ISBINARY(t->val))
-			printNodesBin(t);
-		else if(t->val == '~')
-			printNodesUn(t);
-		putchar(' ');	
-	}
-}
 
 Tree P(char **);
 
@@ -215,7 +171,54 @@ int evalbin(char op, int op1, int op2){
 }
 
 int evalun(char op, int op1){
-	return ~op1;
+	return !op1;
+}
+
+void printNodesUn(Tree);
+void printNodesBin(Tree t)
+{
+	if(t!=NULL){
+		/*putchar('(');*/
+		if(t->left && t->left->val == '~')
+			printNodesUn(t->left);
+		else
+			printNodesBin(t->left);
+		printf("%c",(t->val));
+		if(t->right && t->right->val== '~')
+			printNodesUn(t->right);
+		else
+			printNodesBin(t->right);
+		/*putchar(')');*/
+	}
+}
+
+
+void printNodesUn(Tree t)
+{
+	if(t!=NULL){
+		printf("%c",(t->val));
+		if(t->left && t->left->val == '~')
+			printNodesUn(t->left);
+		else
+			printNodesBin(t->left);
+	}
+}
+
+void printTreeHead(Tree t)
+{
+	if(t!=NULL){
+		/*printf("curr: %c\n",t->val);*/
+		if(t->val >= 'A' && t->val <='Z')
+			printf("%c",(t->val));
+		
+		printTreeHead(t->left);
+		printTreeHead(t->right);
+		if(ISBINARY(t->val))
+			printNodesBin(t);
+		else if(t->val == '~')
+			printNodesUn(t);
+		printf("%c",',');
+	}
 }
 
 int getval(char varname, Column *c, int pos,int count)
@@ -239,14 +242,34 @@ int evalTree(Tree t,Column *c, int pos, int count){
 		return getval(t->val,c,pos,count); /*value corrosponding to current variable*/
 }
 
+void printTree(Tree t,Column *c, int pos, int count)
+{
+	if(t!=NULL){
+		/*printf("curr: %c\n",t->val);*/
+		if(t->val >= 'A' && t->val <='Z')
+			printf("%d",getval((t->val),c,pos,count));
+		
+		printTree(t->left,c,pos,count);
+		printTree(t->right,c,pos,count);
+		if(ISBINARY(t->val))
+			printf("%d",evalTree(t,c,pos,count));
+		else if(t->val == '~')
+			printf("%d",evalTree(t,c,pos,count));
+		printf("%c",',');
+	}
+}
+
 void totalEval(Tree t, Column *c, int count)
 {
 	int pos=0;
+	printTreeHead(t);
+	putchar('\n');
 	while(pos<pow(2,count)){
-		printf("%d",evalTree(t,c,pos, count));
+		/*printf("%d",evalTree(t,c,pos, count));*/
+		printTree(t,c, pos, count);
+		putchar('\n');
 		pos++;
 	}
-	putchar('\n');
 }
 
 void Erecognizer(char **input){
@@ -258,11 +281,8 @@ void Erecognizer(char **input){
 	myCol = return_mask(*input,&varc);
 	myTree = E(input);
 	expect(input,'*');
-	printf("Solving..\n");
 	totalEval(myTree,myCol,varc);
-	printf("Printing..\n");
 
-	printTree(myTree);
 }
 
 
@@ -281,7 +301,7 @@ int main(int argc, char **argv)
 	input = strcpy(input,argv[1]);
 	input = strcat(input,"*");	
 	Erecognizer(&input); 
-	printf("This is a wff\n");
+	/*printf("This is a wff\n");*/
 	return EXIT_SUCCESS;
 }
 

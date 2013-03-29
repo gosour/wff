@@ -1,0 +1,64 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Column	tree.c	/^typedef struct column Column;$/;"	t	typeref:struct:column	file:
+E	eval.c	/^void E(char **input)$/;"	f	signature:(char **input)
+E	parse.c	/^void E(char **input)$/;"	f	signature:(char **input)
+E	tree.c	/^Tree E(char **input)$/;"	f	signature:(char **input)
+Erecognizer	eval.c	/^void Erecognizer(char **input){$/;"	f	signature:(char **input)
+Erecognizer	parse.c	/^void Erecognizer(char **input){$/;"	f	signature:(char **input)
+Erecognizer	tree.c	/^void Erecognizer(char **input){$/;"	f	signature:(char **input)
+ISBINARY	parse.c	6;"	d	file:
+ISBINARY	tree.c	7;"	d	file:
+P	eval.c	/^void P(char **);$/;"	p	file:	signature:(char **)
+P	eval.c	/^void P(char **input)$/;"	f	signature:(char **input)
+P	parse.c	/^void P(char **);$/;"	p	file:	signature:(char **)
+P	parse.c	/^void P(char **input)$/;"	f	signature:(char **input)
+P	tree.c	/^Tree P(char **);$/;"	p	file:	signature:(char **)
+P	tree.c	/^Tree P(char **input)$/;"	f	signature:(char **input)
+Tree	tree.c	/^typedef struct node *Tree;$/;"	t	typeref:struct:node	file:
+bitpatt	tree.c	/^	int *bitpatt;$/;"	m	struct:column	file:	access:public
+check_wff	wff.c	/^int check_wff(char *);$/;"	p	file:	signature:(char *)
+column	tree.c	/^struct column{$/;"	s	file:
+column::bitpatt	tree.c	/^	int *bitpatt;$/;"	m	struct:column	file:	access:public
+column::varname	tree.c	/^	char varname;$/;"	m	struct:column	file:	access:public
+consume	eval.c	/^void consume(char **input){$/;"	f	signature:(char **input)
+consume	parse.c	/^void consume(char **input){$/;"	f	signature:(char **input)
+consume	tree.c	/^void consume(char **input){$/;"	f	signature:(char **input)
+error	eval.c	/^void error()$/;"	f
+error	parse.c	/^void error()$/;"	f
+error	tree.c	/^void error()$/;"	f
+evalTree	tree.c	/^int evalTree(Tree t,Column *c, int pos, int count){$/;"	f	signature:(Tree t,Column *c, int pos, int count)
+evalbin	tree.c	/^int evalbin(char op, int op1, int op2){$/;"	f	signature:(char op, int op1, int op2)
+evalun	tree.c	/^int evalun(char op, int op1){$/;"	f	signature:(char op, int op1)
+expect	eval.c	/^int expect(char **input, char a)$/;"	f	signature:(char **input, char a)
+expect	parse.c	/^int expect(char **input, char a)$/;"	f	signature:(char **input, char a)
+expect	tree.c	/^int expect(char **input, char a)$/;"	f	signature:(char **input, char a)
+getval	tree.c	/^int getval(char varname, Column *c, int pos,int count)$/;"	f	signature:(char varname, Column *c, int pos,int count)
+left	tree.c	/^	struct node *left;$/;"	m	struct:node	typeref:struct:node::node	file:	access:public
+main	eval.c	/^int main()$/;"	f
+main	parse.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	tree.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	wff.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+mkTree	tree.c	/^Tree mkTree(char root, Tree left, Tree right)$/;"	f	signature:(char root, Tree left, Tree right)
+next	eval.c	/^char next(char **input)$/;"	f	signature:(char **input)
+next	parse.c	/^char next(char **input)$/;"	f	signature:(char **input)
+next	tree.c	/^char next(char **input)$/;"	f	signature:(char **input)
+node	tree.c	/^struct node{$/;"	s	file:
+node::left	tree.c	/^	struct node *left;$/;"	m	struct:node	typeref:struct:node::node	file:	access:public
+node::right	tree.c	/^	struct node *right;$/;"	m	struct:node	typeref:struct:node::node	file:	access:public
+node::val	tree.c	/^	char val;$/;"	m	struct:node	file:	access:public
+printNodesBin	tree.c	/^void printNodesBin(Tree t)$/;"	f	signature:(Tree t)
+printNodesUn	tree.c	/^void printNodesUn(Tree t)$/;"	f	signature:(Tree t)
+printNodesUn	tree.c	/^void printNodesUn(Tree);$/;"	p	file:
+printTree	tree.c	/^void printTree(Tree t,Column *c, int pos, int count)$/;"	f	signature:(Tree t,Column *c, int pos, int count)
+printTreeHead	tree.c	/^void printTreeHead(Tree t)$/;"	f	signature:(Tree t)
+return_mask	eval.c	/^int ** return_mask(int n)$/;"	f	signature:(int n)
+return_mask	tree.c	/^Column* return_mask(char *input, int *varc)$/;"	f	signature:(char *input, int *varc)
+right	tree.c	/^	struct node *right;$/;"	m	struct:node	typeref:struct:node::node	file:	access:public
+totalEval	tree.c	/^void totalEval(Tree t, Column *c, int count)$/;"	f	signature:(Tree t, Column *c, int count)
+val	tree.c	/^	char val;$/;"	m	struct:node	file:	access:public
+varname	tree.c	/^	char varname;$/;"	m	struct:column	file:	access:public
