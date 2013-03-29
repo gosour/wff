@@ -1,5 +1,5 @@
 #A WFF interpreter
-##Checks for validity, consitency and creates the logic table
+##Checks for validity, consistency and creates the logic table
 <br>
 
 There are two files **parse.c** and **wff.c** of which the latter is the actual file.
