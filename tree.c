@@ -115,51 +115,77 @@ Tree P(char **input)
 	
 }	
 
-int countVar(char *input)
+struct column{
+	char varname;
+	int *bitpatt;
+};
+
+typedef struct column Column;
+
+Column* return_mask(char *input, int *varc)
 {
-	int array[26] = {};
-	int i=0;
 	int count = 0;
+	int no; 
+	int **list;
+	Column *c;
+	int level, i,j, temp, alphabet;
+	int array[26] = {};
+
+	/*Creating an array of letters and counting which are present*/
 	while(input[i])
 	{
 		if (input[i] >='A' && input[i] <='Z')
 			array[input[i]-'A']++;
 		i++;
 	}
+
 	for(i=0;i<26;i++)
 		if (array[i])
 			count++;
-	return count;
-}
 
-int ** return_mask(int n)
-{
-	int no = pow(2,n);
-	int **list = malloc(n);
-	int level, i, temp;
+	no = pow(2,count);
+	list = malloc(count);
+	c = malloc(sizeof(Column)*count);
 
-	for(i=0;i<n;i++){
-		list[i]	= malloc(no);
+	for(i=0,j=0;i<26;i++){
+		if(array[i]){
+			c[j].varname = 'A'+ i;
+			c[j].bitpatt = (int *)malloc(sizeof(int)*pow(2,count));
+			j++;
+		}
 	}
 
-    for (level = 0; level < n; level++){
-        for (i = (1<<n)-1; i>=0; i--){   // we'll always output 2**n bits
+
+	for (level = 0; level < count; level++){
+		for (i = (1<<count)-1,j=0; i>=0; i--){   // we'll always output 2**n bits
 			temp = i;
 			printf("%d",(temp >> level) & 1);
 			temp = i;
-            list[level][i] = (temp >> level) & 1;
+			c[level].bitpatt[j++] = (temp >> level) & 1;
 		}
 		printf("\n");
-    }
-	
-	return list;
+
+	}	
+
+	*varc =  count;	
+	return c;
 }
 
 
 void Erecognizer(char **input){
 	Tree myTree = NULL;
-	int **list;
-	list = return_mask(countVar(*input));
+	Column *myCol;
+	int varc = 0;
+	int i,j;
+
+	myCol = return_mask(*input,&varc);
+	printf("No of columns: %d\n",varc);
+	for(i=0;i<varc; i++){
+		printf("%c:\t",myCol[i].varname);
+		for(j=0;j<pow(2,varc);j++)
+			printf("%d",myCol[i].bitpatt[j]);
+		putchar('\n');
+	}
 	myTree = E(input);
 	expect(input,'*');
 	printTree(myTree);
