@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
+#include <unistd.h>
 
 #define ISBINARY(a) a =='^' || a=='v' || a=='=' || a=='>'
 
@@ -259,20 +259,46 @@ void printTree(Tree t,Column *c, int pos, int count)
 	}
 }
 
-void totalEval(Tree t, Column *c, int count)
+int * totalEval(Tree t, Column *c, int count,int print_flag)
 {
 	int pos=0;
-	printTreeHead(t);
+	int *final = malloc(sizeof(int) * pow(2,count));
+	if (print_flag){
+		printTreeHead(t);
+	}
 	putchar('\n');
 	while(pos<pow(2,count)){
-		/*printf("%d",evalTree(t,c,pos, count));*/
-		printTree(t,c, pos, count);
-		putchar('\n');
+		final[pos] = evalTree(t,c,pos, count);
+		if(print_flag){
+			printTree(t,c, pos, count);
+			putchar('\n');
+		}
 		pos++;
 	}
+	return final;
 }
 
-void Erecognizer(char **input){
+void checkResult(int *result,int size)
+{
+	int i=0;
+	int fflag = 0;
+	int tflag = 0;
+	for(i=0;i<size;i++){
+		if(result[i] == 0)
+			fflag++;
+		if(result[i] == 1)
+			tflag++;
+	}
+	if(fflag && tflag)
+		printf("Invalid & Consistent\n");
+	if(!fflag)
+		printf("Valid\n");
+	if(!tflag)
+		printf("Inconsistent\n");
+
+}
+
+void Erecognizer(char **input,int print_flag){
 	Tree myTree = NULL;
 	Column *myCol;
 	int varc = 0;
@@ -281,27 +307,56 @@ void Erecognizer(char **input){
 	myCol = return_mask(*input,&varc);
 	myTree = E(input);
 	expect(input,'*');
-	totalEval(myTree,myCol,varc);
+	checkResult(totalEval(myTree,myCol,varc,print_flag),pow(2,varc));
 
+}
+
+void print_help()
+{
+	printf( "Well Formed Formula checker\n"
+			"Allowed variable names = [A-Z]\n"
+			"Logical connectives:\n"
+			"^ : and binary operator\n"
+			"v : or binary operator\n"
+			"~ : not unary operator\n"
+			"= : equivalent binary operator. (<->)\n"
+			"> : implies binary operator. (->) \n"
+			"Valid wff: Evaluates to True only\n"
+			"Inconsistent wff: Evaluates to False only\n");
 }
 
 
 int main(int argc, char **argv)
 {	
 	int size = 0, i;
+	int print_flag = 0;
+	int input_flag = 0;
+	int opt;
 	char *input;
-	if(argc<2){
-		printf("Usage: parse [expression]\n");
-		return EXIT_FAILURE;
+
+	while((opt = getopt(argc,argv,"hpe:")) != -1){
+		switch (opt) {
+			case 'h': print_help();
+					  break;
+			case 'p': print_flag = 1;
+					  break;
+			case 'e': input_flag = 1;
+			          for(i=0;optarg[i];i++)
+					  	size++;
+					  input = malloc(sizeof(char) * (size+1));
+				      input = strcpy(input,optarg);
+ 				      input = strcat(input,"*");	
+					  break;
+
+			default:  fprintf(stderr, "Usage: %s -e expression [-p] [-h]\n",
+							  		argv[0]);
+					  exit(EXIT_FAILURE);
+		}
 	}
-	for(i=0;argv[1][i];i++)
-		size++;
 	
-	input = malloc(sizeof(char) * (size+1));
-	input = strcpy(input,argv[1]);
-	input = strcat(input,"*");	
-	Erecognizer(&input); 
-	/*printf("This is a wff\n");*/
+	if(input_flag){
+			Erecognizer(&input,print_flag); 
+	}
 	return EXIT_SUCCESS;
 }
 
