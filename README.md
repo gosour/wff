@@ -19,7 +19,13 @@ is a wff, and it exists just for educational purposes.
 
 ####Variable names: [A-Z]
 ####Output format: CSV
+To pretty print the csv output pipe into 'column'.
 
+
+Example usage:
+'''
+wff -e "AvB^(C=D)" -p | column -t -s ','
+'''
 ##TODO
 - [x] Standard csv format
 - [ ] Prettify on display. 
