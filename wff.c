@@ -374,7 +374,7 @@ int main(int argc, char **argv)
 					  filename = malloc(sizeof(char) * (strlen(optarg)+1));
 					  filename = strcpy(filename,optarg);
 					  break;
-			default:  fprintf(stderr, "Usage: %s -e expression [-p] [-h]\n",
+			default:  fprintf(stderr, "Usage: %s -e expression [-p] [-h] [-o filename]\n",
 							  		argv[0]);
 					  exit(EXIT_FAILURE);
 		}
