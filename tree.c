@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #define ISBINARY(a) a =='^' || a=='v' || a=='=' || a=='>'
+#define BOOL(n) n? 'T':'F'
 
 struct node{
 	char val;
@@ -174,50 +175,54 @@ int evalun(char op, int op1){
 	return !op1;
 }
 
-void printNodesUn(Tree);
-void printNodesBin(Tree t)
+void printNodesUn(Tree,FILE *);
+void printNodesBin(Tree t,FILE *buff)
 {
 	if(t!=NULL){
-		/*putchar('(');*/
 		if(t->left && t->left->val == '~')
-			printNodesUn(t->left);
+			printNodesUn(t->left,buff);
 		else
-			printNodesBin(t->left);
-		printf("%c",(t->val));
+			printNodesBin(t->left,buff);
+		fprintf(buff,"%c",(t->val));
 		if(t->right && t->right->val== '~')
-			printNodesUn(t->right);
+			printNodesUn(t->right,buff);
 		else
-			printNodesBin(t->right);
-		/*putchar(')');*/
+			printNodesBin(t->right,buff);
 	}
 }
 
 
-void printNodesUn(Tree t)
+void printNodesUn(Tree t,FILE *buff)
 {
 	if(t!=NULL){
-		printf("%c",(t->val));
+		fprintf(buff,"%c",(t->val));
 		if(t->left && t->left->val == '~')
-			printNodesUn(t->left);
+			printNodesUn(t->left,buff);
 		else
-			printNodesBin(t->left);
+			printNodesBin(t->left,buff);
 	}
 }
 
-void printTreeHead(Tree t)
+void printTreeHead(Tree t,int commac,FILE *buff)
 {
+
 	if(t!=NULL){
-		/*printf("curr: %c\n",t->val);*/
-		if(t->val >= 'A' && t->val <='Z')
-			printf("%c",(t->val));
-		
-		printTreeHead(t->left);
-		printTreeHead(t->right);
-		if(ISBINARY(t->val))
-			printNodesBin(t);
-		else if(t->val == '~')
-			printNodesUn(t);
-		printf("%c",',');
+		if(t->val >= 'A' && t->val <='Z'){
+			if(commac)
+				fprintf(buff,",");
+			fprintf(buff,"%c",(t->val));
+		}
+		printTreeHead(t->left,commac++,buff);
+		printTreeHead(t->right,commac++,buff);
+		if(ISBINARY(t->val)){
+			fprintf(buff,",");
+			printNodesBin(t,buff);
+		}
+		else if(t->val == '~'){
+			fprintf(buff,",");
+			printNodesUn(t,buff);
+		}
+		commac++;
 	}
 }
 
@@ -242,36 +247,47 @@ int evalTree(Tree t,Column *c, int pos, int count){
 		return getval(t->val,c,pos,count); /*value corrosponding to current variable*/
 }
 
-void printTree(Tree t,Column *c, int pos, int count)
+void printTree(Tree t,Column *c, int pos, int count,int commac,FILE *buff)
 {
 	if(t!=NULL){
-		/*printf("curr: %c\n",t->val);*/
-		if(t->val >= 'A' && t->val <='Z')
-			printf("%d",getval((t->val),c,pos,count));
+		if(t->val >= 'A' && t->val <='Z'){
+			if(commac)
+				fprintf(buff,",");
+			fprintf(buff,"%c",BOOL(getval((t->val),c,pos,count)));
+		}
 		
-		printTree(t->left,c,pos,count);
-		printTree(t->right,c,pos,count);
+		printTree(t->left,c,pos,count,commac++,buff);
+		printTree(t->right,c,pos,count,commac++,buff);
 		if(ISBINARY(t->val))
-			printf("%d",evalTree(t,c,pos,count));
+			fprintf(buff,",%c",BOOL(evalTree(t,c,pos,count)));
 		else if(t->val == '~')
-			printf("%d",evalTree(t,c,pos,count));
-		printf("%c",',');
+			fprintf(buff,",%c",BOOL(evalTree(t,c,pos,count)));
 	}
 }
 
-int * totalEval(Tree t, Column *c, int count,int print_flag)
+int * totalEval(Tree t, Column *c, int count,int print_flag,int file_flag,FILE *buff)
 {
 	int pos=0;
 	int *final = malloc(sizeof(int) * pow(2,count));
 	if (print_flag){
-		printTreeHead(t);
+		printTreeHead(t,0,stdout);
+		fprintf(stdout,"\n");
 	}
-	putchar('\n');
+	if(file_flag){
+		printTreeHead(t,0,buff);
+		fprintf(buff,"\n");
+	}	
+	
 	while(pos<pow(2,count)){
 		final[pos] = evalTree(t,c,pos, count);
 		if(print_flag){
-			printTree(t,c, pos, count);
-			putchar('\n');
+			printTree(t,c, pos, count,0,stdout);
+			fprintf(stdout,"\n");
+		}
+
+		if(file_flag){
+			printTree(t,c, pos, count,0,buff);
+			fprintf(buff,"\n");
 		}
 		pos++;
 	}
@@ -298,16 +314,20 @@ void checkResult(int *result,int size)
 
 }
 
-void Erecognizer(char **input,int print_flag){
+void Erecognizer(char **input,int print_flag,int file_flag,FILE *buff){
 	Tree myTree = NULL;
 	Column *myCol;
 	int varc = 0;
 	int i,j;
+	int *result;
 
 	myCol = return_mask(*input,&varc);
 	myTree = E(input);
 	expect(input,'*');
-	checkResult(totalEval(myTree,myCol,varc,print_flag),pow(2,varc));
+	/*checkResult(totalEval(myTree,myCol,varc,print_flag),pow(2,varc));*/
+	result = totalEval(myTree,myCol,varc,print_flag,file_flag,buff);
+	if(!print_flag)
+		checkResult(result, pow(2,varc));
 
 }
 
@@ -331,10 +351,13 @@ int main(int argc, char **argv)
 	int size = 0, i;
 	int print_flag = 0;
 	int input_flag = 0;
+	int file_flag = 0;
 	int opt;
 	char *input;
+	char *filename;
+	FILE *buff = stdout;
 
-	while((opt = getopt(argc,argv,"hpe:")) != -1){
+	while((opt = getopt(argc,argv,"hpe:o:")) != -1){
 		switch (opt) {
 			case 'h': print_help();
 					  break;
@@ -347,7 +370,10 @@ int main(int argc, char **argv)
 				      input = strcpy(input,optarg);
  				      input = strcat(input,"*");	
 					  break;
-
+			case 'o': file_flag = 1;
+					  filename = malloc(sizeof(char) * (strlen(optarg)+1));
+					  filename = strcpy(filename,optarg);
+					  break;
 			default:  fprintf(stderr, "Usage: %s -e expression [-p] [-h]\n",
 							  		argv[0]);
 					  exit(EXIT_FAILURE);
@@ -355,8 +381,12 @@ int main(int argc, char **argv)
 	}
 	
 	if(input_flag){
-			Erecognizer(&input,print_flag); 
+			if(file_flag){
+				buff = fopen(filename,"w");
+			}
+			Erecognizer(&input,print_flag,file_flag,buff); 
 	}
+
 	return EXIT_SUCCESS;
 }
 
